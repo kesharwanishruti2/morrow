@@ -44,7 +44,7 @@ const Categories = () => {
           {categories.map((category) => (
             <NavLink
               key={category.name}
-              to={`/listings?category=${category.name.toLowerCase()}`}
+              to={`/listings?category=${encodeURIComponent(category.name)}`}
               className="group overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)]"
             >
               {/* Image */}

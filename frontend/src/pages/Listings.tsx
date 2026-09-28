@@ -83,7 +83,8 @@ const Listings = () => {
           className="mb-8 flex flex-wrap gap-2"
         >
           {categories.map((category) => {
-            const isActive = selectedCategory === category.value;
+            const isActive =
+              selectedCategory.toLowerCase() === category.value.toLowerCase();
 
             return (
               <button

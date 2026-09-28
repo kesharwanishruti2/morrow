@@ -1,5 +1,19 @@
 @import "tailwindcss";
 
+@theme {
+  --color-background: #f6f1ea;
+  --color-card: #fffdfc;
+  --color-primary: #243b53;
+  --color-dark: #172a3a;
+  --color-terracotta: #c96f4a;
+  --color-gold: #d9a441;
+  --color-text: #263238;
+  --color-muted: #6b7280;
+  --color-border: #e5ded5;
+  --color-success: #5f8068;
+  --color-danger: #b85450;
+}
+
 :root {
   --background: #f6f1ea;
   --card: #fffdfc;
@@ -16,19 +30,20 @@
 
 * {
   box-sizing: border-box;
-  margin: 2;
-  padding: 0;
 }
 
 html {
   scroll-behavior: smooth;
 }
+
 body {
   min-height: 100vh;
   background-color: var(--background);
   color: var(--text);
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 button,
@@ -46,4 +61,3 @@ a {
   color: inherit;
   text-decoration: none;
 }
-

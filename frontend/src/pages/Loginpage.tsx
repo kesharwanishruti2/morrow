@@ -1,12 +1,8 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import Api from "../service/Api";
-import {
-  setUser,
-  setAccessToken,
-} from "../Storee/slices/authSlice.tsx";
-import { useAppDispatch } from "../Storee/hooks.tsx";
+import { setUser, setAccessToken } from "../Storee/slices/authSlice";
+import { useAppDispatch } from "../Storee/hooks";
 
 const Loginpage = () => {
   const navigate = useNavigate();
@@ -35,30 +31,16 @@ const Loginpage = () => {
       setError("");
 
       const response = await Api.post("/auth/login", formData);
-
-      console.log("LOGIN RESPONSE:", response.data);
-
       const { user, accessToken } = response.data.data;
-
-      console.log("NEW ACCESS TOKEN:", accessToken);
 
       dispatch(setUser(user));
       dispatch(setAccessToken(accessToken));
-
       localStorage.setItem("accessToken", accessToken);
-
-      console.log(
-        "SAVED TOKEN:",
-        localStorage.getItem("accessToken")
-      );
 
       navigate("/dashboard");
     } catch (error: any) {
       console.log("LOGIN ERROR:", error);
-
-      setError(
-        error.response?.data?.message || "Login failed"
-      );
+      setError(error.response?.data?.message || "Invalid email or password");
     } finally {
       setLoading(false);
     }
@@ -66,10 +48,8 @@ const Loginpage = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex min-h-screen items-center justify-center overflow-y-auto bg-black/40 px-4 py-6 sm:px-6">
-
       {/* Login Card */}
       <div className="relative w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-2xl sm:p-8">
-
         {/* Close Button */}
         <button
           type="button"
@@ -82,32 +62,28 @@ const Loginpage = () => {
 
         {/* Heading */}
         <div className="mb-7 pr-8 sm:mb-8">
-          <p className="text-xs font-medium uppercase tracking-[0.25em] text-[var(--muted)]">
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[var(--muted)]">
             MORROW
           </p>
 
-          <h1 className="mt-2 text-2xl font-medium text-[var(--dark)] sm:text-3xl">
+          <h1 className="mt-2 text-2xl font-bold text-[var(--dark)] sm:text-3xl">
             Welcome Back
           </h1>
 
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-            Login to your account and continue exploring.
+            Login to your account to manage your listings.
           </p>
         </div>
 
         {/* Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-5"
-        >
-
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}
           <div>
             <label
               htmlFor="email"
               className="mb-2 block text-sm font-medium text-[var(--text)]"
             >
-              Email
+              Email address
             </label>
 
             <input
@@ -116,7 +92,7 @@ const Loginpage = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Enter your email"
+              placeholder="name@example.com"
               autoComplete="email"
               required
               className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-3.5 text-sm text-[var(--text)] placeholder:text-[var(--muted)] outline-none transition-colors focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/10"
@@ -161,24 +137,23 @@ const Loginpage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-[var(--primary)] px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-[var(--dark)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-xl bg-[var(--primary)] px-6 py-3.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-[var(--dark)] hover:shadow-md active:scale-95 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        {/* Register */}
+        {/* Register link */}
         <p className="mt-6 text-center text-sm leading-6 text-[var(--muted)]">
           Don't have an account?{" "}
           <button
             type="button"
             onClick={() => navigate("/register")}
-            className="font-medium text-[var(--primary)] transition-colors hover:text-[var(--dark)] hover:underline"
+            className="font-semibold text-[var(--primary)] transition-colors hover:text-[var(--dark)] hover:underline"
           >
-            Create Account
+            Sign Up
           </button>
         </p>
-
       </div>
     </div>
   );

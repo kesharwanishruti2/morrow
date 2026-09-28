@@ -1,249 +1,252 @@
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router";
+import { useAppDispatch, useAppSelector } from "../Storee/hooks";
+import { logout } from "../Storee/slices/authSlice";
 import Api from "../service/Api";
-import Card from "../components/Card";
 
-type Product = {
-  _id: string;
-  name: string;
-  category: string;
-  price: {
-    amount: number;
-    currency: string;
-  };
-  images: string[];
-};
-
-const categories = [
-  { name: "Furniture", image: "/images/furniture.png" },
-  { name: "Lighting", image: "/images/Light.png" },
-  { name: "Decor", image: "/images/decor.png" },
-  { name: "Ceramics", image: "/images/cermos.png" },
-];
-
-const Home = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
+const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    const getProducts = async () => {
-      try {
-        const response = await Api.get("/products");
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth) as {
+    isAuthenticated: boolean;
+    user: { name?: string; email?: string } | null;
+  };
 
-        setProducts(response.data.data.user.products ?? []);
-      } catch {
-        setError("Products load nahi ho paaye. Dobara try karein.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const handleLogout = async () => {
+    try {
+      await Api.post("/auth/logout");
+    } catch (error) {
+      console.log("Logout failed", error);
+    } finally {
+      localStorage.removeItem("accessToken");
+      dispatch(logout());
+      navigate("/login");
+    }
+  };
 
-    getProducts();
-  }, []);
-
-  const categoryLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `rounded-full border px-4 py-2 text-sm transition-colors ${
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `relative py-2 text-sm font-medium transition-colors duration-200 ${
       isActive
-        ? "border-[var(--primary)] bg-[var(--primary)] text-white"
-        : "border-[var(--border)] bg-[var(--card)] text-[var(--text)] hover:border-[var(--primary)]"
+        ? "text-[var(--dark)] font-semibold"
+        : "text-[var(--text)] hover:text-[var(--terracotta)]"
     }`;
 
   return (
-    <main className="min-h-screen bg-[var(--background)]">
-
-      {/* Hero */}
-      <section className="px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 rounded-3xl bg-[#e3e2d6] px-6 py-10 sm:px-10 md:grid-cols-2 md:px-12 md:py-14">
-
-          <div>
-            <p className="mb-5 text-xs font-medium uppercase tracking-[0.25em] text-[var(--muted)]">
-              Thoughtfully found, ready for a new home
-            </p>
-
-            <h1 className="max-w-xl text-4xl leading-tight text-[var(--dark)] sm:text-5xl lg:text-6xl">
-              Good things find their next place.
-            </h1>
-
-            <p className="mt-6 max-w-md text-base leading-7 text-[var(--muted)]">
-              Discover unique products from independent sellers and find
-              something worth bringing home.
-            </p>
-
-            <button
-              type="button"
-              onClick={() => navigate("/listings")}
-              className="mt-8 rounded-full bg-[var(--primary)] px-6 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90"
-            >
-              Explore Listings{" "}
-              <span aria-hidden="true">→</span>
-            </button>
-          </div>
-
-          <div className="flex justify-center md:justify-end">
-            <img
-              src="https://i.pinimg.com/736x/d6/5b/ff/d65bff75949dd7036348c2e3640a0041.jpg"
-              alt="Thoughtfully selected home decor"
-              className="h-64 w-full max-w-[430px] rounded-2xl object-cover sm:h-72"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Products */}
-      <section className="px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-
-          <div className="mb-8 flex items-end justify-between gap-4">
-            <div>
-              <p className="mb-2 text-xs uppercase tracking-[0.25em] text-[var(--muted)]">
-                Featured
-              </p>
-
-              <h2 className="text-3xl text-[var(--dark)] md:text-4xl">
-                Find your next favourite
-              </h2>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => navigate("/listings")}
-              className="hidden text-sm text-[var(--muted)] transition-colors hover:text-[var(--primary)] md:block"
-            >
-              View all listings{" "}
-              <span aria-hidden="true">→</span>
-            </button>
-          </div>
-
-          {loading ? (
-            <p className="py-8 text-[var(--muted)]">
-              Loading products…
-            </p>
-          ) : error ? (
-            <p className="py-8 text-[var(--danger)]">
-              {error}
-            </p>
-          ) : products.length === 0 ? (
-            <p className="py-8 text-[var(--muted)]">
-              Abhi koi product available nahi hai.
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {products.slice(0, 4).map((product) => (
-                <Card
-                  key={product._id}
-                  product={product}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Categories */}
-      <section className="border-y border-[var(--border)] bg-[var(--card)] px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-
-          <div className="mb-8">
-            <p className="mb-2 text-xs uppercase tracking-[0.25em] text-[var(--muted)]">
-              Explore
-            </p>
-
-            <h2 className="text-3xl text-[var(--dark)]">
-              Shop by category
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {categories.map((category) => (
-              <NavLink
-                key={category.name}
-                to={`/listings?category=${encodeURIComponent(
-                  category.name
-                )}`}
-                className="group relative h-48 overflow-hidden rounded-2xl border border-[var(--border)]"
-              >
-                <img
-                  src={category.image}
-                  alt={category.name}
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-
-                <div className="absolute inset-0 bg-black/25 transition-colors group-hover:bg-black/35" />
-
-                <h3 className="absolute bottom-5 left-5 text-xl font-medium text-white">
-                  {category.name}
-                </h3>
-              </NavLink>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Browse Listings */}
-      <section className="px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-
-          <div className="mb-6">
-            <p className="mb-2 text-xs uppercase tracking-[0.25em] text-[var(--muted)]">
-              Browse
-            </p>
-
-            <h2 className="text-3xl text-[var(--dark)]">
-              Browse all listings
-            </h2>
-          </div>
-
-          <nav
-            aria-label="Filter listings by category"
-            className="mb-8 flex flex-wrap gap-2"
+    <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--card)]/95 backdrop-blur-md">
+      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Brand / Logo */}
+        <div className="flex items-center gap-8">
+          <NavLink
+            to="/"
+            className="flex items-center gap-2.5 text-xl font-bold tracking-[0.2em] text-[var(--dark)] transition-opacity hover:opacity-85"
           >
-            {["All", "Furniture", "Lighting", "Decor"].map((category) => (
-              <NavLink
-                key={category}
-                to={
-                  category === "All"
-                    ? "/listings"
-                    : `/listings?category=${encodeURIComponent(category)}`
-                }
-                end={category === "All"}
-                className={categoryLinkClass}
-              >
-                {category}
-              </NavLink>
-            ))}
-          </nav>
+            <span className="h-3.5 w-3.5 rounded-full bg-[var(--terracotta)]" />
+            <span>MORROW</span>
+          </NavLink>
 
-          {loading ? (
-            <p className="py-8 text-[var(--muted)]">
-              Loading products…
-            </p>
-          ) : error ? (
-            <p className="py-8 text-[var(--danger)]">
-              {error}
-            </p>
-          ) : products.length === 0 ? (
-            <p className="py-8 text-[var(--muted)]">
-              Abhi koi product available nahi hai.
-            </p>
+          {/* Desktop Navigation */}
+          <nav className="hidden items-center gap-8 md:flex">
+            <NavLink to="/" end className={navLinkClass}>
+              {({ isActive }) => (
+                <>
+                  Home
+                  <span
+                    className={`absolute bottom-0 left-0 h-[2px] bg-[var(--terracotta)] transition-all duration-300 ${
+                      isActive ? "w-full" : "w-0"
+                    }`}
+                  />
+                </>
+              )}
+            </NavLink>
+
+            <NavLink to="/listings" className={navLinkClass}>
+              {({ isActive }) => (
+                <>
+                  Listings
+                  <span
+                    className={`absolute bottom-0 left-0 h-[2px] bg-[var(--terracotta)] transition-all duration-300 ${
+                      isActive ? "w-full" : "w-0"
+                    }`}
+                  />
+                </>
+              )}
+            </NavLink>
+
+            <NavLink to="/category" className={navLinkClass}>
+              {({ isActive }) => (
+                <>
+                  Categories
+                  <span
+                    className={`absolute bottom-0 left-0 h-[2px] bg-[var(--terracotta)] transition-all duration-300 ${
+                      isActive ? "w-full" : "w-0"
+                    }`}
+                  />
+                </>
+              )}
+            </NavLink>
+          </nav>
+        </div>
+
+        {/* Desktop Auth & Actions */}
+        <div className="hidden items-center gap-6 md:flex">
+          {isAuthenticated ? (
+            <>
+              <NavLink
+                to="/dashboard"
+                className="text-sm font-medium text-[var(--text)] transition-colors hover:text-[var(--terracotta)]"
+              >
+                Dashboard
+              </NavLink>
+
+              <NavLink
+                to="/listings/add"
+                className="rounded-full bg-[var(--primary)] px-5 py-2 text-sm font-medium text-white shadow-xs transition-all hover:bg-[var(--dark)] hover:shadow-sm"
+              >
+                + Sell Item
+              </NavLink>
+
+              <div className="flex items-center gap-3 pl-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#DCCFB7] text-xs font-semibold text-[#29463C]">
+                  {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="text-xs font-medium text-[var(--muted)] transition-colors hover:text-[var(--danger)]"
+                >
+                  Logout
+                </button>
+              </div>
+            </>
           ) : (
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {products.map((product) => (
-                <Card
-                  key={product._id}
-                  product={product}
-                />
-              ))}
-            </div>
+            <>
+              <NavLink
+                to="/login"
+                className="text-sm font-medium text-[var(--text)] transition-colors hover:text-[var(--terracotta)]"
+              >
+                Login
+              </NavLink>
+
+              <NavLink
+                to="/register"
+                className="text-sm font-medium text-[var(--text)] transition-colors hover:text-[var(--terracotta)]"
+              >
+                Sign Up
+              </NavLink>
+            </>
           )}
         </div>
-      </section>
 
-    </main>
+        {/* Mobile Menu Button */}
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-lg text-[var(--dark)] hover:bg-[var(--background)] md:hidden"
+          aria-label="Toggle menu"
+          aria-expanded={isOpen}
+        >
+          <span
+            className={`h-0.5 w-5 bg-current transition-all duration-200 ${
+              isOpen ? "translate-y-2 rotate-45" : ""
+            }`}
+          />
+          <span
+            className={`h-0.5 w-5 bg-current transition-all duration-200 ${
+              isOpen ? "opacity-0" : ""
+            }`}
+          />
+          <span
+            className={`h-0.5 w-5 bg-current transition-all duration-200 ${
+              isOpen ? "-translate-y-2 -rotate-45" : ""
+            }`}
+          />
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="border-t border-[var(--border)] bg-[var(--card)] px-4 py-5 shadow-lg md:hidden">
+          <nav className="flex flex-col gap-3">
+            <NavLink
+              to="/"
+              end
+              onClick={() => setIsOpen(false)}
+              className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text)] hover:bg-[var(--background)] hover:text-[var(--terracotta)]"
+            >
+              Home
+            </NavLink>
+
+            <NavLink
+              to="/listings"
+              onClick={() => setIsOpen(false)}
+              className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text)] hover:bg-[var(--background)] hover:text-[var(--terracotta)]"
+            >
+              Listings
+            </NavLink>
+
+            <NavLink
+              to="/category"
+              onClick={() => setIsOpen(false)}
+              className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text)] hover:bg-[var(--background)] hover:text-[var(--terracotta)]"
+            >
+              Categories
+            </NavLink>
+
+            <div className="mt-2 border-t border-[var(--border)] pt-4 flex flex-col gap-3">
+              {isAuthenticated ? (
+                <>
+                  <NavLink
+                    to="/dashboard"
+                    onClick={() => setIsOpen(false)}
+                    className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text)] hover:bg-[var(--background)]"
+                  >
+                    Seller Dashboard
+                  </NavLink>
+                  <NavLink
+                    to="/listings/add"
+                    onClick={() => setIsOpen(false)}
+                    className="rounded-lg bg-[var(--primary)] px-4 py-2.5 text-center text-sm font-medium text-white"
+                  >
+                    + Sell Item
+                  </NavLink>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsOpen(false);
+                      handleLogout();
+                    }}
+                    className="rounded-lg px-3 py-2 text-left text-sm font-medium text-[var(--danger)] hover:bg-[var(--background)]"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <NavLink
+                    to="/login"
+                    onClick={() => setIsOpen(false)}
+                    className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text)] hover:bg-[var(--background)] hover:text-[var(--terracotta)]"
+                  >
+                    Login
+                  </NavLink>
+
+                  <NavLink
+                    to="/register"
+                    onClick={() => setIsOpen(false)}
+                    className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text)] hover:bg-[var(--background)] hover:text-[var(--terracotta)]"
+                  >
+                    Sign Up
+                  </NavLink>
+                </>
+              )}
+            </div>
+          </nav>
+        </div>
+      )}
+    </header>
   );
 };
 
-export default Home;
+export default Navbar;
