@@ -22,70 +22,76 @@ const categories = [
 
 const Listings = () => {
   const products = useLoaderData() as Product[];
-
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const selectedCategory = searchParams.get("category") || "";
+  const selectedCategory = searchParams.get("category") ?? "";
+  const searchValue = searchParams.get("search") ?? "";
+
+  const updateCategory = (category: string) => {
+    const nextParams = new URLSearchParams(searchParams);
+
+    if (category) {
+      nextParams.set("category", category);
+    } else {
+      nextParams.delete("category");
+    }
+
+    setSearchParams(nextParams);
+  };
+
+  const updateSearch = (search: string) => {
+    const nextParams = new URLSearchParams(searchParams);
+
+    if (search) {
+      nextParams.set("search", search);
+    } else {
+      nextParams.delete("search");
+    }
+
+    setSearchParams(nextParams);
+  };
 
   return (
-    <main className="min-h-screen px-6 py-12">
+    <main className="min-h-screen bg-[var(--background)] px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
       <div className="mx-auto max-w-7xl">
-
-        {/* HEADER */}
-        <div className="mb-8">
-          <p className="text-xs uppercase tracking-[0.25em] text-[var(--muted)]">
+        <header className="mb-8">
+          <p className="text-xs font-medium uppercase tracking-[0.25em] text-[var(--muted)]">
             Marketplace
           </p>
 
-          <h1 className="mt-2 text-4xl font-medium text-[var(--dark)]">
+          <h1 className="mt-2 text-3xl font-medium text-[var(--dark)] sm:text-4xl">
             All Listings
           </h1>
+        </header>
+
+        <div className="mb-6">
+          <label htmlFor="product-search" className="sr-only">
+            Search products
+          </label>
+          <input
+            id="product-search"
+            type="search"
+            placeholder="Search products..."
+            value={searchValue}
+            onChange={(event) => updateSearch(event.target.value)}
+            className="w-full rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm text-[var(--text)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 sm:max-w-md"
+          />
         </div>
 
-        {/* SEARCH */}
-     <input
-  type="text"
-  placeholder="Search products..."
-  value={searchParams.get("search") || ""}
-  onChange={(e) => {
-    const search = e.target.value;
-
-    const params: Record<string, string> = {};
-
-    const category = searchParams.get("category");
-
-    if (category) {
-      params.category = category;
-    }
-
-    if (search) {
-      params.search = search;
-    }
-
-    setSearchParams(params);
-  }}
-  className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm outline-none focus:border-[var(--primary)] md:max-w-md"
-/>
- <p className="p-2"></p>
-        {/* CATEGORY BUTTONS */}
-        <div className="mb-10 flex flex-wrap gap-2">
+        <nav
+          aria-label="Filter listings by category"
+          className="mb-8 flex flex-wrap gap-2"
+        >
           {categories.map((category) => {
-            const isActive =
-              selectedCategory === category.value;
+            const isActive = selectedCategory === category.value;
 
             return (
               <button
-                key={category.label}
-                onClick={() => {
-                  if (category.value === "") {
-                    setSearchParams({});
-                  } else {
-                    setSearchParams({
-                      category: category.value,
-                    });
-                  }
-                }}
-                className={`rounded-full border px-5 py-2 text-sm transition ${
+                key={category.value || "all"}
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => updateCategory(category.value)}
+                className={`rounded-full border px-4 py-2 text-sm transition-colors ${
                   isActive
                     ? "border-[var(--primary)] bg-[var(--primary)] text-white"
                     : "border-[var(--border)] bg-[var(--card)] text-[var(--text)] hover:border-[var(--primary)]"
@@ -95,24 +101,19 @@ const Listings = () => {
               </button>
             );
           })}
-        </div>
-<p className="p-2"></p>
-        {/* PRODUCTS */}
+        </nav>
+
         {products.length === 0 ? (
-          <p className="text-[var(--muted)]">
+          <p className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-5 py-8 text-center text-[var(--muted)]">
             No products found.
           </p>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {products.map((product) => (
-              <Card
-                key={product._id}
-                product={product}
-              />
+              <Card key={product._id} product={product} />
             ))}
           </div>
         )}
-
       </div>
     </main>
   );

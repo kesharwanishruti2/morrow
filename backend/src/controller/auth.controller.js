@@ -200,21 +200,22 @@ export const refreshTokenC = async(req,res)=>{
         })
     }
 }
-export const logout = async(req,res)=>{
-    try{
-        const {userId} = req.body;
-        await userModel.findByIdAndUpdate(userId,{
-        refreshToken:null
-        })
-        res.clearCookie("refreshToken")
-        return res.status(200).json({
-            message:"Logout Successfully"
-        })
-
-
-    }catch(err){
-        return res.status(500).json({
-            message:"Logout failed"
-        })
+export const logout = async (req, res) => {
+  try {
+    const userId = req.user?.userId || req.body?.userId;
+    if (userId) {
+      await userModel.findByIdAndUpdate(userId, {
+        refreshToken: null,
+      });
     }
-}
+    res.clearCookie("refreshToken");
+    return res.status(200).json({
+      message: "Logout Successfully",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      message: "Logout failed",
+      error: err.message,
+    });
+  }
+};

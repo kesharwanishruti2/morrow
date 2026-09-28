@@ -19,6 +19,7 @@ router.post("/login",loginValidator,login)
  */
 router.get("/me",authenticate,getMe)
 router.post("/refresh-token",refreshTokenC)
+router.post("/refresh",refreshTokenC)
 router.post("/logout",authenticate,logout)
 
 export default router
