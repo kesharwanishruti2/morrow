@@ -5,9 +5,14 @@ const productDetailsLoader = async ({
 }: {
   params: { id?: string };
 }) => {
-  const response = await Api.get(`/products/${params.id}`);
+  try {
+    const response = await Api.get(`/products/${params.id}`);
 
-  return response.data.data.product;
+    return response.data?.data?.product || null;
+  } catch (error) {
+    console.error("Failed to load product details:", error);
+    return null;
+  }
 };
 
-export default productDetailsLoader;
+export default productDetailsLoader;

@@ -4,12 +4,13 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(),tailwindcss()],
-   server: {
+  plugins: [react(), tailwindcss()],
+  server: {
     proxy: {
-      "/api": {
-        target: "https://morrow-wgj1.onrender.com/",
+      '/api': {
+        target: 'https://morrow-tccs.onrender.com',
         changeOrigin: true,
+        secure: false,
       },
     },
   },

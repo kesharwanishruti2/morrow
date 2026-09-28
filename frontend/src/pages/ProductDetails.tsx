@@ -15,11 +15,22 @@ type Product = {
 };
 
 const ProductDetails = () => {
-  const product = useLoaderData() as Product;
+  const product = useLoaderData() as Product | null;
 
-const [selectedImage, setSelectedImage] = useState(
-  product.images?.[0]
-);
+  const [selectedImage, setSelectedImage] = useState(
+    product?.images?.[0] || ""
+  );
+
+  if (!product) {
+    return (
+      <main className="min-h-screen px-6 py-12 text-center">
+        <div className="mx-auto max-w-md rounded-2xl border border-[var(--border)] bg-[var(--card)] p-8">
+          <h2 className="font-serif text-2xl text-[#29463C]">Product Not Found</h2>
+          <p className="mt-2 text-sm text-[var(--muted)]">The product you are looking for does not exist or could not be loaded.</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen px-6 py-12">
