@@ -8,7 +8,7 @@ export default defineConfig({
    server: {
     proxy: {
       "/api": {
-        target: "https://morrow-wgj1.onrender.com/",
+        target: "https://morrow-tccs.onrender.com",
         changeOrigin: true,
       },
     },
