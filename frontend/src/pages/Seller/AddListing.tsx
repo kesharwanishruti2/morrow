@@ -48,16 +48,13 @@ const AddListing = () => {
       await Api.post("/products", formData);
 
       navigate("/mylistings");
-    } catch (error) {
-      console.log(error);
-        console.log("CREATE LISTING ERROR:", error);
-  console.log("BACKEND RESPONSE:", error.response?.data);
-       console.log("CREATE LISTING ERROR:", error);
-
-  console.log("BACKEND RESPONSE:", error.response?.data);
-  console.log(
-  "VALIDATION ERRORS JSON:",
-  JSON.stringify(error.response?.data?.errors, null, 2))
+    } catch (error: any) {
+      console.log("CREATE LISTING ERROR:", error);
+      console.log("BACKEND RESPONSE:", error.response?.data);
+      console.log(
+        "VALIDATION ERRORS JSON:",
+        JSON.stringify(error.response?.data?.errors, null, 2)
+      );
 
       setError("Failed to create listing");
     } finally {
