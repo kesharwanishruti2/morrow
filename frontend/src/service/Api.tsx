@@ -1,7 +1,6 @@
-
-
 import axios from "axios";
 import { store } from "../Storee/store";
+import { setAccessToken, logout } from "../Storee/slices/authSlice";
 
 const Api = axios.create({
   baseURL: "/api",

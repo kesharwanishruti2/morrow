@@ -1,11 +1,7 @@
-import React from 'react'
-
-type Props = {}
-
-const App = (props: Props) => {
+const App = () => {
   return (
     <div>App</div>
   )
 }
 
-export default App
+export default App
