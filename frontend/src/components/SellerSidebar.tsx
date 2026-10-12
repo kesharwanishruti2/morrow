@@ -3,7 +3,12 @@ import { useAppDispatch, useAppSelector } from "../Storee/hooks";
 import { logout } from "../Storee/slices/authSlice";
 import Api from "../service/Api";
 
-const SellerSidebar = () => {
+type SellerSidebarProps = {
+  isOpen?: boolean;
+  onClose?: () => void;
+};
+
+const SellerSidebar = ({ isOpen = false, onClose }: SellerSidebarProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 

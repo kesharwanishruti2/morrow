@@ -1,5 +1,5 @@
 import {Router} from "express"
-import { authenticate } from "../middlewar/auth.middlewar.js"
+import { authenticate, authorizeRoles } from "../middlewar/auth.middlewar.js"
 import { createProduct ,getProdctById,getProduct,update,deleteProduct} from "../controller/product.controller.js"
 import { createProductValidator } from "../validation/product.validation.js"
 
@@ -21,9 +21,9 @@ const upload = multer({storage:multer.memoryStorage(),
 */ 
 router.post("/",
     authenticate,
-   
-   upload.array("images",3),
-   (req, res, next) => {
+    authorizeRoles("seller"),
+    upload.array("images",3),
+    (req, res, next) => {
         req.body?.price && (req.body.price = JSON.parse(req.body.price))
         next()
     },
@@ -37,7 +37,7 @@ router.post("/",
 router.get("/",getProduct)
 //ye id se fetched kara ga 
 router.get("/:id",getProdctById);
-router.put("/:id",authenticate,update)
-router.delete("/:id",authenticate,deleteProduct)
+router.put("/:id",authenticate,authorizeRoles("seller"),update)
+router.delete("/:id",authenticate,authorizeRoles("seller"),deleteProduct)
 
 export default router

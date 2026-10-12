@@ -56,7 +56,7 @@ const Home = () => {
               Good things find their next place.
             </h1>
 
-            <p className="mt-6 max-w-md text-base leading-7 text-[var(--muted)]">
+            <p className="mt-5 max-w-md text-sm leading-relaxed text-[var(--muted)] sm:text-base">
               Discover unique products from independent sellers and find
               something worth bringing home.
             </p>
@@ -154,6 +154,7 @@ const Home = () => {
               View all listings <span aria-hidden="true">→</span>
             </button>
           </div>
+        </div>
 
           {loading ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
