@@ -60,19 +60,42 @@ const SellerSidebar = ({ isOpen = false, onClose }: SellerSidebarProps) => {
   };
 
   return (
-    <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r border-[var(--border)] bg-[#FCFAF6] px-4 py-6 shadow-xs">
-      {/* Brand / Logo */}
-      <div className="mb-8 flex items-center justify-between px-3">
-        <NavLink
-          to="/"
-          className="flex items-center gap-2.5 transition-opacity hover:opacity-85"
-        >
-          <span className="h-3.5 w-3.5 rounded-full bg-[var(--terracotta)]" />
-          <span className="text-xl font-bold tracking-[0.2em] text-[#29463C]">
-            MORROW
-          </span>
-        </NavLink>
-      </div>
+    <>
+      {/* Mobile Backdrop */}
+      {isOpen && (
+        <div
+          onClick={onClose}
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs md:hidden"
+        />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-64 shrink-0 flex-col border-r border-[var(--border)] bg-[#FCFAF6] px-4 py-6 shadow-xs transition-transform duration-300 md:sticky md:top-0 md:translate-x-0 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {/* Brand / Logo */}
+        <div className="mb-8 flex items-center justify-between px-3">
+          <NavLink
+            to="/"
+            className="flex items-center gap-2.5 transition-opacity hover:opacity-85"
+          >
+            <span className="h-3.5 w-3.5 rounded-full bg-[var(--terracotta)]" />
+            <span className="text-xl font-bold tracking-[0.2em] text-[#29463C]">
+              MORROW
+            </span>
+          </NavLink>
+
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-2xl text-[var(--muted)] hover:text-[var(--dark)] md:hidden"
+            >
+              ×
+            </button>
+          )}
+        </div>
 
       {/* Navigation Group */}
       <div className="flex-1">
@@ -151,7 +174,8 @@ const SellerSidebar = ({ isOpen = false, onClose }: SellerSidebarProps) => {
         </div>
       </div>
     </aside>
-  );
+  </>
+);
 };
 
 export default SellerSidebar;
