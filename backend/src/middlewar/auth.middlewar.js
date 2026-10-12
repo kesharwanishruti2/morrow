@@ -8,18 +8,24 @@ export function authenticate(req,res,next){
         })
     }
     try{
-const decode = readAccessToken(accessToken)
-   //const {userId,role}= decode
-   //req.user = { userId, role }
-   // mainly ye iska aise matlab hota hai 
-req.user = decode;
-next()
-
-}
-    catch(err){
-    res.status(401).json({
-    message:"Invalid or expired access Token "
+        const decode = readAccessToken(accessToken)
+        req.user = decode;
+        next()
     }
-)
+    catch(err){
+        res.status(401).json({
+            message:"Invalid or expired access Token "
+        })
+    }
 }
+
+export function authorizeRoles(...allowedRoles) {
+    return (req, res, next) => {
+        if (!req.user || !allowedRoles.includes(req.user.role)) {
+            return res.status(403).json({
+                message: "Access Denied: Only authorized users can perform this action"
+            });
+        }
+        next();
+    };
 }

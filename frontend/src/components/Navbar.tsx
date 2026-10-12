@@ -1,8 +1,18 @@
 import { useState } from "react";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
+import { useAppDispatch, useAppSelector } from "../Storee/hooks";
+import { logout } from "../Storee/slices/authSlice";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
+  };
 
   return (
     <header className="border-b border-[var(--border)] bg-[var(--card)]">
@@ -96,21 +106,46 @@ const Navbar = () => {
 
         {/* Desktop Auth */}
         <div className="hidden items-center gap-6 md:flex">
+          {isAuthenticated ? (
+            <>
+              {user?.role === "seller" && (
+                <NavLink
+                  to="/dashboard"
+                  className="rounded-xl bg-[var(--primary)] px-4 py-2 text-sm font-medium text-white transition hover:bg-[var(--dark)]"
+                >
+                  Seller Portal
+                </NavLink>
+              )}
 
-          <NavLink
-            to="/login"
-            className="text-sm text-[var(--text)] transition hover:text-[var(--terracotta)]"
-          >
-            Login
-          </NavLink>
+              <span className="text-sm font-medium text-[var(--dark)]">
+                {user?.name}
+              </span>
 
-          <NavLink
-            to="/register"
-            className="text-sm text-[var(--text)] transition hover:text-[var(--terracotta)]"
-          >
-            Sign Up
-          </NavLink>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="text-sm text-[var(--muted)] transition hover:text-[var(--dark)] cursor-pointer"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <NavLink
+                to="/login"
+                className="text-sm text-[var(--text)] transition hover:text-[var(--terracotta)]"
+              >
+                Login
+              </NavLink>
 
+              <NavLink
+                to="/register"
+                className="text-sm text-[var(--text)] transition hover:text-[var(--terracotta)]"
+              >
+                Sign Up
+              </NavLink>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -158,23 +193,48 @@ const Navbar = () => {
 
             <div className="border-t border-[var(--border)] pt-4">
               <div className="flex flex-col gap-4">
+                {isAuthenticated ? (
+                  <>
+                    {user?.role === "seller" && (
+                      <NavLink
+                        to="/dashboard"
+                        onClick={() => setIsOpen(false)}
+                        className="text-sm font-semibold text-[var(--primary)]"
+                      >
+                        Seller Portal
+                      </NavLink>
+                    )}
 
-                <NavLink
-                  to="/login"
-                  onClick={() => setIsOpen(false)}
-                  className="text-sm text-[var(--text)] hover:text-[var(--terracotta)]"
-                >
-                  Login
-                </NavLink>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsOpen(false);
+                        handleLogout();
+                      }}
+                      className="text-left text-sm text-[var(--muted)] hover:text-[var(--dark)]"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <NavLink
+                      to="/login"
+                      onClick={() => setIsOpen(false)}
+                      className="text-sm text-[var(--text)] hover:text-[var(--terracotta)]"
+                    >
+                      Login
+                    </NavLink>
 
-                <NavLink
-                  to="/register"
-                  onClick={() => setIsOpen(false)}
-                  className="text-sm text-[var(--text)] hover:text-[var(--terracotta)]"
-                >
-                  Sign Up
-                </NavLink>
-
+                    <NavLink
+                      to="/register"
+                      onClick={() => setIsOpen(false)}
+                      className="text-sm text-[var(--text)] hover:text-[var(--terracotta)]"
+                    >
+                      Sign Up
+                    </NavLink>
+                  </>
+                )}
               </div>
             </div>
 

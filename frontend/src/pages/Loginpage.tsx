@@ -55,7 +55,11 @@ const Loginpage = () => {
         localStorage.getItem("accessToken")
       );
 
-      navigate("/dashboard");
+      if (user?.role === "seller") {
+        navigate("/dashboard");
+      } else {
+        navigate("/");
+      }
 
     } catch (error: any) {
       console.log("LOGIN ERROR:", error);

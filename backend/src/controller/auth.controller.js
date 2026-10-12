@@ -35,7 +35,7 @@ const user = await userModel.create({
     name,
     email,
     passwordHash,
-    role:"seller"
+    role:"user"
 });
 
 const accesstoken = createAccessToken({
@@ -59,7 +59,7 @@ res.status(200).json({
             id:user._id,
             name:user.name,
             email:user.email,
-            roles:user.role
+            role:user.role
         },
         accesstoken
     }
@@ -132,7 +132,8 @@ export const getMe = async(req,res)=>{
             user:{
                 email:user.email,
                 name:user.name,
-                id:user._id
+                id:user._id,
+                role:user.role
             }
         }
     })
@@ -188,7 +189,8 @@ export const refreshTokenC = async(req,res)=>{
                 user:{
                   email:user.email,
                   name:user.name,
-                  id:user._id
+                  id:user._id,
+                  role:user.role
                 },
                 accessToken
             }
