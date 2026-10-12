@@ -44,8 +44,8 @@ const Categories = () => {
           {categories.map((category) => (
             <NavLink
               key={category.name}
-              to={`/listings?category=${category.name}`}
-              className="group overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] transition duration-300 hover:-translate-y-1 hover:shadow-md"
+              to={`/listings?category=${encodeURIComponent(category.name)}`}
+              className="group overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)]"
             >
               {/* Image */}
               <div className="aspect-square overflow-hidden bg-[var(--background)]">
