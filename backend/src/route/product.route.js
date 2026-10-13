@@ -6,10 +6,11 @@ import { createProductValidator } from "../validation/product.validation.js"
 
 const router = Router()
 import multer from "multer"
-const upload = multer({storage:multer.memoryStorage(),
-     limits: {
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
         files: 3,
-        fileSize: 1 * 1024 * 1024 // 1MB
+        fileSize: 5 * 1024 * 1024 // 5MB
     },
 })
 /*
@@ -22,15 +23,34 @@ const upload = multer({storage:multer.memoryStorage(),
 router.post("/",
     authenticate,
     authorizeRoles("seller"),
-    upload.array("images",3),
     (req, res, next) => {
-        req.body?.price && (req.body.price = JSON.parse(req.body.price))
-        next()
+        upload.array("images", 3)(req, res, (err) => {
+            if (err instanceof multer.MulterError) {
+                if (err.code === "LIMIT_FILE_SIZE") {
+                    return res.status(400).json({ message: "Image size cannot exceed 5MB" });
+                }
+                if (err.code === "LIMIT_FILE_COUNT") {
+                    return res.status(400).json({ message: "You can upload a maximum of 3 images" });
+                }
+                return res.status(400).json({ message: err.message });
+            } else if (err) {
+                return res.status(400).json({ message: err.message });
+            }
+            next();
+        });
     },
-
-   
-     createProductValidator,
-       createProduct
+    (req, res, next) => {
+        if (req.body?.price && typeof req.body.price === "string") {
+            try {
+                req.body.price = JSON.parse(req.body.price);
+            } catch (e) {
+                return res.status(400).json({ message: "Invalid price format" });
+            }
+        }
+        next();
+    },
+    createProductValidator,
+    createProduct
 )
 
 //witout authenticate user jo bina login ka aya customer 

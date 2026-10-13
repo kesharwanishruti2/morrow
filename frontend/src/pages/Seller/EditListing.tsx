@@ -61,7 +61,9 @@ const EditListing = () => {
       navigate("/mylistings");
     } catch (error: any) {
       console.error("UPDATE LISTING ERROR:", error);
-      setError(error.response?.data?.message || "Failed to update listing");
+      const validationError = error.response?.data?.errors?.[0]?.msg;
+      const apiMessage = error.response?.data?.message;
+      setError(validationError || apiMessage || "Failed to update listing");
     }
   };
 
