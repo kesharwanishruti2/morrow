@@ -1,40 +1,48 @@
 import productModel from "../model/product.model.js";
 import { uploadFile } from "../service/service.js";
 import mongoose from "mongoose";
-export const createProduct = async(req,res)=>{
- console.log(req.body)
- console.log(req.files)
+export const createProduct = async (req, res) => {
+    try {
+        const filesUrls = [];
 
-const filesUrls = [];
+        if (req.files && Array.isArray(req.files)) {
+            for (let i = 0; i < req.files.length; i++) {
+                const response = await uploadFile({
+                    buffer: req.files[i].buffer,
+                    fileName: req.files[i].originalname,
+                    mimeType: req.files[i].mimetype || "image/jpeg"
+                });
 
-for(let i= 0;i<req.files.length;i++){
-    const response = await uploadFile({
-            buffer: req.files[ i ].buffer,
-            fileName: req.files[ i ].originalname
-        })
-
-        filesUrls.push(response.url)
-}
-console.log(filesUrls)
-const  {name,description,category,stock,price} = req.body
-const Product = await  productModel.create({
-   name,
-   description,
-   category,
-      price: {
-        amount: Number(price.amount),
-        currency:price.currency
-    },
-    stock: Number(stock),
-   images:filesUrls 
-})
-  res.status(201).json({
-        message: "Product created successfully",
-        data: {
-            Product
+                filesUrls.push(response.url);
+            }
         }
-    })
-}
+
+        const { name, description, category, stock, price } = req.body;
+        const Product = await productModel.create({
+            name,
+            description,
+            category,
+            price: {
+                amount: Number(price.amount),
+                currency: price.currency
+            },
+            stock: Number(stock),
+            images: filesUrls
+        });
+
+        return res.status(201).json({
+            message: "Product created successfully",
+            data: {
+                Product
+            }
+        });
+    } catch (err) {
+        console.error("CREATE PRODUCT ERROR:", err);
+        return res.status(500).json({
+            message: err.message || "Failed to create product"
+        });
+    }
+};
 export const getProduct = async(req,res)=>{
     try{
 

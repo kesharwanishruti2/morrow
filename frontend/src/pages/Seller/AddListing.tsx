@@ -16,6 +16,17 @@ const AddListing = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 3) {
+      setError("You can upload a maximum of 3 images.");
+      e.target.value = "";
+      setImages(null);
+      return;
+    }
+    setError("");
+    setImages(e.target.files);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -25,8 +36,8 @@ const AddListing = () => {
     try {
       const formData = new FormData();
 
-      formData.append("name", name);
-      formData.append("description", description);
+      formData.append("name", name.trim());
+      formData.append("description", description.trim());
       formData.append("category", category);
 
       formData.append(
@@ -49,7 +60,9 @@ const AddListing = () => {
       navigate("/mylistings");
     } catch (error: any) {
       console.error("CREATE LISTING ERROR:", error);
-      setError(error.response?.data?.message || "Failed to create listing");
+      const validationError = error.response?.data?.errors?.[0]?.msg;
+      const apiMessage = error.response?.data?.message;
+      setError(validationError || apiMessage || "Failed to create listing");
     } finally {
       setLoading(false);
     }
@@ -113,15 +126,22 @@ const AddListing = () => {
 
             {/* DESCRIPTION */}
             <div>
-              <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-[var(--primary)]">
-                Description
-              </label>
+              <div className="mb-2 flex items-center justify-between">
+                <label className="block text-xs font-medium uppercase tracking-wider text-[var(--primary)]">
+                  Description
+                </label>
+                <span className="text-xs text-[var(--muted)]">
+                  Min 5 characters ({description.length}/1000)
+                </span>
+              </div>
 
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe material, condition, dimensions, and craft details..."
                 rows={5}
+                minLength={5}
+                maxLength={1000}
                 required
                 className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-sm outline-none transition focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]"
               />
@@ -209,12 +229,12 @@ const AddListing = () => {
                 type="file"
                 accept="image/*"
                 multiple
-                onChange={(e) => setImages(e.target.files)}
+                onChange={handleImageChange}
                 className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-sm file:mr-4 file:rounded-full file:border-0 file:bg-[var(--primary)] file:px-4 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-[var(--primary-hover)]"
               />
 
               <p className="mt-2 text-xs text-[var(--muted)]">
-                You can upload up to 3 high-quality images.
+                You can upload up to 3 high-quality images (max 5MB each).
               </p>
             </div>
 
